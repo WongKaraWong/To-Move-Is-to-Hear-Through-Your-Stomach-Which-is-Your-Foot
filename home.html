@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>To Move Is to Hear (Through Your Stomach Which is Your Foot)</title>
+  </head>
+
+  <body>
+    <div id="whitecover" class="cover"></div>
+    <img class="content" id="mouseviewer" src="./statics/viewer.png" />
+    <div class="d-flex flex-column" style="margin-top: 7rem;">
+      <div class="d-inline-flex">
+        <video id="video1" class="w-50" height="405px">
+          <source src="" type="video/mp4" />
+        </video>
+        <video id="video2" class="w-50" height="405px">
+          <source src="" type="video/mp4" />
+        </video>
+      </div>
+      <div class="d-inline-flex">
+        <audio id="audio">
+          <source type="audio/ogg" />
+        </audio>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      const sourcesMap = {
+        video1: ["./statics/CheckA1.mp4"],
+        video2: [
+          "./statics/CheckV1.mp4",
+          "./statics/CheckV2.mp4",
+          "./statics/CheckV3.mp4",
+        ],
+        audio: [
+          "./statics/improv1.wav",
+          "./statics/improv2.wav",
+          "./statics/improv3.wav",
+        ],
+      };
+
+      function getRandomInt(max, min = 0) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function selectSource(id) {
+        const sources = sourcesMap[id];
+        const idx = getRandomInt(sources.length - 1);
+        console.log(`select ${id} source ${idx}`);
+        return sources[idx];
+      }
+
+      const audio = document.getElementById("audio");
+      const audioSource = audio.children[0];
+
+      function playAudio() {
+        audio.muted = true;
+        const url = selectSource("audio");
+        audioSource.setAttribute("src", url);
+        audio.load();
+        audio.play();
+      }
+
+      function muteAudio(muted) {
+        if (muted) audio.muted = true;
+        else {
+          audio.muted = false;
+        }
+      }
+
+      function setupAudio() {
+        audio.onended = function () {
+          console.log(`audio ended .........`);
+          playAudio();
+        };
+        playAudio();
+      }
+
+      function beginMove() {
+        const cover = document.getElementById("whitecover");
+        cover.remove();
+        setupAudio();
+        const mouseviewer = document.getElementById("mouseviewer");
+        document.addEventListener("mousemove", (e) => {
+          let x = e.clientX;
+          let y = e.clientY;
+          if (x > 1350) x = 1400;
+          if (y > 600) y = 600;
+          if (y < 35) y = 35;
+          mouseviewer.style.setProperty("--x", x - 1400 + "px");
+          mouseviewer.style.setProperty("--y", y - 500 + "px");
+        });
+        document.removeEventListener("click", beginMove);
+        document.addEventListener("mousedown", () => {
+          muteAudio(false);
+        });
+        document.addEventListener("mouseup", () => {
+          muteAudio(true);
+        });
+      }
+
+      function createVideoEndedListener(id) {
+        const video = document.getElementById(id);
+        video.addEventListener("ended", () => {
+          console.log(`${id} ended .............`);
+          playVideo(id);
+        });
+      }
+
+      function playVideo(id) {
+        const video = document.getElementById(id);
+        video.muted = true;
+
+        const source = video.children[0];
+        const url = selectSource(id);
+        source.setAttribute("src", [url]);
+        video.load();
+        video.play();
+      }
+
+      window.onload = function () {
+        createVideoEndedListener("video1");
+        createVideoEndedListener("video2");
+        playVideo("video1");
+        playVideo("video2");
+        document.addEventListener("click", beginMove);
+        // beginMove()
+      };
+    </script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
